@@ -39,14 +39,20 @@ const emotionStyles: Record<EmotionType, { bg: string; selected: string; ring: s
   },
 };
 
+// Separate scammer emotions from Safe
+const scammerEmotions = emotions.filter(e => e.type !== 'Safe');
+const safeEmotion = emotions.find(e => e.type === 'Safe')!;
+
 export const EmotionSelector = ({ selectedEmotions, onToggle }: EmotionSelectorProps) => {
   return (
     <div className="game-card">
-      <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">
+      <h3 className="text-xs md:text-sm font-semibold text-muted-foreground mb-2 md:mb-3 uppercase tracking-wide">
         What emotion is triggered? (select 1-2)
       </h3>
-      <div className="flex flex-wrap gap-2">
-        {emotions.map((emotion) => {
+      
+      {/* Scammer emotions */}
+      <div className="flex flex-wrap gap-1.5 md:gap-2 mb-2 md:mb-3">
+        {scammerEmotions.map((emotion) => {
           const isSelected = selectedEmotions.includes(emotion.type);
           const styles = emotionStyles[emotion.type];
           
@@ -55,18 +61,36 @@ export const EmotionSelector = ({ selectedEmotions, onToggle }: EmotionSelectorP
               key={emotion.type}
               onClick={() => onToggle(emotion.type)}
               className={cn(
-                'emotion-chip flex items-center gap-2',
+                'emotion-chip flex items-center gap-1.5 md:gap-2 px-2 md:px-3 py-1.5 md:py-2',
                 isSelected ? `${styles.selected} ${styles.ring} selected` : styles.bg
               )}
             >
-              <span className="text-base">{emotion.emoji}</span>
-              <span className="font-medium text-sm">{emotion.type}</span>
+              <span className="text-sm md:text-base">{emotion.emoji}</span>
+              <span className="font-medium text-xs md:text-sm">{emotion.type}</span>
             </button>
           );
         })}
       </div>
+
+      {/* Safe/Legitimate option - separate */}
+      <div className="border-t border-border pt-2 md:pt-3">
+        <p className="text-[10px] md:text-xs text-muted-foreground mb-1.5 md:mb-2">Or is it legitimate?</p>
+        <button
+          onClick={() => onToggle(safeEmotion.type)}
+          className={cn(
+            'emotion-chip flex items-center gap-1.5 md:gap-2 px-2 md:px-3 py-1.5 md:py-2',
+            selectedEmotions.includes('Safe') 
+              ? `${emotionStyles.Safe.selected} ${emotionStyles.Safe.ring} selected` 
+              : emotionStyles.Safe.bg
+          )}
+        >
+          <span className="text-sm md:text-base">{safeEmotion.emoji}</span>
+          <span className="font-medium text-xs md:text-sm">Legitimate / No Trick</span>
+        </button>
+      </div>
+
       {selectedEmotions.length > 0 && (
-        <p className="text-xs text-muted-foreground mt-3">
+        <p className="text-[10px] md:text-xs text-muted-foreground mt-2 md:mt-3">
           Selected: {selectedEmotions.join(', ')}
         </p>
       )}

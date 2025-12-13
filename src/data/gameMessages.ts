@@ -52,6 +52,7 @@ export const emotions: { type: EmotionType; emoji: string; description: string; 
   },
 ];
 
+// 14 messages (removed duplicate case 15)
 export const gameMessages: GameMessage[] = [
   {
     id: 1,
@@ -192,15 +193,5 @@ export const gameMessages: GameMessage[] = [
     correctVerdict: 'TRAP',
     explanation: 'Essential services are used to create fear. Always check bills only via official apps or physical bills.',
     advice: 'Check your official electricity board app or visit the office. They send physical notices first.',
-  },
-  {
-    id: 15,
-    type: 'Email',
-    sender: 'HR Department',
-    message: 'Congratulations! You\'ve been selected for a work-from-home position. Pay ₹5,000 registration fee to start immediately.',
-    correctEmotions: ['Greed', 'Urgency'],
-    correctVerdict: 'TRAP',
-    explanation: 'Real jobs never ask for money upfront. This combines fake opportunity with immediate payment demand.',
-    advice: 'Legitimate employers never charge fees. Report and block immediately.',
   },
 ];

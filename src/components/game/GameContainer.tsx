@@ -43,10 +43,6 @@ export const GameContainer = () => {
     setPhase('tutorial');
   };
 
-  const handleHowToPlay = () => {
-    setPhase('tutorial');
-  };
-
   const handleTutorialContinue = () => {
     setPhase('instructions');
   };
@@ -84,6 +80,39 @@ export const GameContainer = () => {
     }
   };
 
+  const handleBackToGame = () => {
+    // Go back to previous question's feedback
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex((prev) => prev - 1);
+      // Get the previous answer
+      const prevAnswer = answers[currentQuestionIndex - 1];
+      if (prevAnswer) {
+        setCurrentAnswer({
+          emotions: prevAnswer.userEmotions,
+          verdict: prevAnswer.userVerdict,
+        });
+      }
+      setPhase('feedback');
+    }
+  };
+
+  const handleBackFromFeedback = () => {
+    // Go back to previous case's feedback
+    if (currentQuestionIndex > 0) {
+      // Remove current answer
+      setAnswers((prev) => prev.slice(0, -1));
+      setCurrentQuestionIndex((prev) => prev - 1);
+      // Get the previous answer
+      const prevAnswer = answers[currentQuestionIndex - 1];
+      if (prevAnswer) {
+        setCurrentAnswer({
+          emotions: prevAnswer.userEmotions,
+          verdict: prevAnswer.userVerdict,
+        });
+      }
+    }
+  };
+
   const handlePlayAgain = () => {
     setPhase('welcome');
     setCurrentQuestionIndex(0);
@@ -106,6 +135,14 @@ export const GameContainer = () => {
     }
   };
 
+  const handleBackReview = () => {
+    if (reviewIndex > 0) {
+      setReviewIndex((prev) => prev - 1);
+    } else {
+      setPhase('results');
+    }
+  };
+
   // Get the message for review
   const getReviewMessage = (): GameMessage | undefined => {
     if (mistakes.length === 0) return undefined;
@@ -116,7 +153,7 @@ export const GameContainer = () => {
   return (
     <div className="min-h-screen bg-background">
       {phase === 'welcome' && (
-        <WelcomeScreen onStart={handleStart} onHowToPlay={handleHowToPlay} />
+        <WelcomeScreen onStart={handleStart} />
       )}
 
       {phase === 'tutorial' && (
@@ -133,6 +170,8 @@ export const GameContainer = () => {
           currentQuestion={currentQuestionIndex + 1}
           totalQuestions={totalQuestions}
           onSubmit={handleSubmitAnswer}
+          onBack={handleBackToGame}
+          canGoBack={currentQuestionIndex > 0}
         />
       )}
 
@@ -142,7 +181,9 @@ export const GameContainer = () => {
           userEmotions={currentAnswer.emotions}
           userVerdict={currentAnswer.verdict}
           onNext={handleNextMessage}
+          onBack={handleBackFromFeedback}
           isLastQuestion={currentQuestionIndex === totalQuestions - 1}
+          showBackButton={currentQuestionIndex > 0}
         />
       )}
 
@@ -164,8 +205,8 @@ export const GameContainer = () => {
             
             return (
               <div className="min-h-screen bg-background">
-                <div className="p-4 bg-muted text-center">
-                  <span className="text-sm font-medium text-muted-foreground">
+                <div className="p-3 md:p-4 bg-muted text-center">
+                  <span className="text-xs md:text-sm font-medium text-muted-foreground">
                     Reviewing mistake {reviewIndex + 1} of {mistakes.length}
                   </span>
                 </div>
@@ -174,7 +215,9 @@ export const GameContainer = () => {
                   userEmotions={mistake.userEmotions}
                   userVerdict={mistake.userVerdict}
                   onNext={handleNextReview}
+                  onBack={handleBackReview}
                   isLastQuestion={reviewIndex === mistakes.length - 1}
+                  showBackButton={true}
                 />
               </div>
             );
